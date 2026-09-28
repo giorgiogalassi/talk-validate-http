@@ -48,9 +48,8 @@ checked against the tag: `validate_http.ts` L96â€“110, `validate_async.ts` L128â
       before the CFP deadline if the recording is wanted for the submission. Checklist in `demo/STAGE.md`.
 - [ ] **Rehearse with a timer** against the per-section budgets in the speaker notes; the 25-min cut
       is tight (~24 min on paper).
-- [ ] **Push the repo** and confirm the URL on the Thank-you slide (placeholder:
-      github.com/giorgiogalassi/talk-validate-http).
-- [ ] **Commit** the repo: the step-2 fallback (`git checkout -- validators.ts`) needs a committed final state.
+- [x] Repo pushed 2026-09-28: https://github.com/giorgiogalassi/talk-validate-http (public; matches the Thank-you slide).
+      The step-2 fallback (`git checkout -- validators.ts`) now has a committed final state.
 - [ ] Optional: make the Worker do real, chunked work (e.g. a hashed local blocklist) instead of a
       timer, if the "contrived worker" objection comes up in rehearsal. The deck already pre-empts it.
 

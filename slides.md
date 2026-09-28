@@ -719,7 +719,7 @@ Senior Frontend Engineer (Freelancer) · GDG Roma Città Organizer
 Speaker notes:
 Land the tagline: the validator that isn't, the resource that is. Pause.
 Thank the room. Open for questions, and leave this slide up: QR for links, repo for the demo.
-Repo URL is a placeholder until the repo is pushed; confirm before the event.
+Repo is live at github.com/giorgiogalassi/talk-validate-http.
 Backup slides follow for likely questions, don't show them unless asked.
 -->
 

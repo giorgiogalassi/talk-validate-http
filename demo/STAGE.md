@@ -25,7 +25,7 @@ Edit variant C: `params: ({ value }) => value()` and the `resource({ params, loa
 - Type `giorgio`, **wait ~1 s**, type `x` → log: `worker aborted giorgio` + `worker start giorgiox`.
   Fast typing coalesces into one lookup: nothing to abort, so don't expect one.
 
-**Fallback:** `git checkout -- src/app/spike/validators.ts` (needs the repo committed) restores the finished C.
+**Fallback:** `git checkout -- src/app/spike/validators.ts` restores the finished C.
 
 ## Step 3 · watch it cancel (≈2 min)
 

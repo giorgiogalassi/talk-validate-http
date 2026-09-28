@@ -1,0 +1,31 @@
+<main>
+  <h1>The Validator That Isn't: spike</h1>
+  <p>Taken: <code>admin</code>, <code>angular</code>, <code>giorgio</code>. Debounce 300 ms, latency 600 ms. A and B hit a real local API (watch DevTools → Network); C and D never touch the network.</p>
+
+  @for (v of variants; track v.key) {
+    @let field = f[v.key];
+    <label>
+      <span>{{ v.label }}</span>
+      <input [formField]="field" autocomplete="off" [attr.data-variant]="v.key" />
+      <output [attr.data-status-for]="v.key">
+        @if (field().pending()) {
+          pending…
+        } @else if (field().invalid()) {
+          {{ field().errors()[0].kind }}
+        } @else if (field().valid()) {
+          valid
+        }
+      </output>
+    </label>
+  }
+
+  <h2>Lookups <button type="button" (click)="log.clear()">clear</button></h2>
+  <table>
+    <thead><tr><th>ms</th><th>transport</th><th>event</th><th>username</th></tr></thead>
+    <tbody>
+      @for (e of log.events(); track $index) {
+        <tr [class]="e.kind"><td>{{ e.at }}</td><td>{{ e.transport }}</td><td>{{ e.kind }}</td><td>{{ e.username }}</td></tr>
+      }
+    </tbody>
+  </table>
+</main>

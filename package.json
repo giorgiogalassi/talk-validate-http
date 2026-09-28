@@ -1,0 +1,23 @@
+{
+  "name": "the-validator-that-isnt-resource-httpresource-signal-forms",
+  "version": "1.0.0",
+  "description": "The Validator That Isn't: resource(), httpResource(), and the Reactive Graph Behind Signal Forms \u2014 Giorgio Galassi",
+  "scripts": {
+    "dev": "slidev",
+    "build": "slidev build",
+    "export": "slidev export",
+    "export-dark": "slidev export --dark",
+    "dev:25": "slidev slides-25.md",
+    "build:25": "slidev build slides-25.md --out dist-25",
+    "export:25": "slidev export slides-25.md --output talk-validate-http-25min.pdf"
+  },
+  "author": "Giorgio Galassi",
+  "license": "ISC",
+  "dependencies": {
+    "@slidev/cli": "^52.15.2",
+    "@slidev/theme-default": "^0.25.0"
+  },
+  "devDependencies": {
+    "playwright-chromium": "^1.63.0"
+  }
+}

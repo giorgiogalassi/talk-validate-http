@@ -4,7 +4,7 @@ Living build doc for the deck and its demo. Abstract and original run of show li
 vault (`drafts/pieces/2026-07-29-validate-http-internals/talk/`); the deck (`slides.md`) is now
 the source of truth for structure and timing. Stage procedure: `demo/STAGE.md`.
 
-Last updated: 2026-09-28 (deck written, challenge review applied).
+Last updated: 2026-09-30 (aligned with the final CFP abstract: primitive + policy framing, Worker cancellation, two rules, payoff).
 
 ## Version pin
 
@@ -14,17 +14,42 @@ checked against the tag: `validate_http.ts` L96–110, `validate_async.ts` L128�
 
 ## Status
 
-- **Deck:** `slides.md`, 40 min, 35 slides incl. 4 backup. 25-min cut: `slides-25.md` (imports
-  26 slides from `slides.md`, `npm run dev:25`). Both build; no slide overflows at 1280×720 with
-  14px code font (checked programmatically + screenshots).
-- **Demo:** 4 variants (A `validateHttp` · B `validateAsync`+`httpResource` · C `validateAsync`+
-  `resource` on a Web Worker · D `validateAsync`+`rxResource` on the Worker). Real local API with
-  configurable latency; `npm run stage` = 2 s latency. Browser-verified: A/B show "(canceled)" in
-  Network and "client aborted" on the server; C/D make zero network requests.
-- **Spec:** `equivalence.spec.ts`, 4 variants × 6 scenarios = **24/24**, stable over repeated runs.
+- **Deck:** `slides.md`, 40 min, 41 slides incl. 5 backup. 25-min cut: `slides-25.md` (imports
+  29 slides, `#1-5,7,10-11,13-22,27-28,30,34-41`: drops the debounce section and the testing payoff,
+  keeps the Web Worker swap + both rules + the timing slide + the payoff). `slides-type.md` mirrors
+  the same content (45 slides with its beat slides). All three build; the new/changed slides were
+  exported to PNG and checked for overflow at 1280×720.
+- **Demo:** 5 variants (A `validateHttp` · B `validateAsync`+`httpResource` · C `validateAsync`+
+  hand-rolled `resource()` on a Web Worker · D `validateAsync`+`rxResource` on the Worker · E
+  `validateAsync`+`resource()` debouncing itself with `debounced()` + `ctx.chain()`). Real local API
+  with configurable latency; `npm run stage` = 2 s latency; `?debounce=0` turns debounce off for the
+  cancel demo; username `offline` exercises `onError`.
+- **Worker cancellation:** `UsernameWorker.check(username, abortSignal)` (`username-lookup.ts`) posts
+  `check`, and on `abort` posts `cancel` and rejects. The Worker (`createUsernameChecker` in
+  `username-check.ts`, wrapped by `username-check.worker.ts`) clears the job and replies `stopped`,
+  which the log shows, so "aborted" (loader saw the signal) and "stopped" (work really ended) are
+  distinct. Cooperative cancel was chosen over `terminate()`+respawn because the work yields; the
+  deck names `terminate()` as the tool for synchronous CPU-bound work.
+- **Spec:** `equivalence.spec.ts`, **50/50**, stable over 3 repeated runs: 5 variants × 7 scenarios
+  (idle, pending+coalesce, valid, error, cancel incl. Worker `stopped`, one-tick pending, invalid
+  mid-flight) + 4 variants × 3 debounce-off scenarios (synchronous pending, every superseding
+  keystroke aborts, idle never aborts) + rule 1 (effect read sees the sentinel) + rule 2 (honoured:
+  Worker stops the job; ignored: same UI, Worker finishes both). The Worker's real code runs
+  in-process (`in-process-worker.ts`, jsdom has no Worker); the old timer fake is gone.
+- **Browser-verified 2026-09-30** (Chromium, 600 ms, `?debounce=0`): A → 4 × `ERR_ABORTED` on the
+  network; C and E → `aborted` + `stopped` per keystroke, zero requests; D `offline` → `unreachable`.
 
 ## Verified findings (all used on slides)
 
+- **Framing (2026-09-30):** every layer is a primitive, a policy, or a preset. `validateHttp()` is a
+  preset (it only picks `httpResource()`), `validateAsync()` is the policy (sync gate, `when`,
+  debounce, status → errors), `resource()`/`ResourceImpl` is the primitive. Replaces the old
+  "disguise or enhancement?" lens everywhere in both decks.
+- **`chain` / `debounced()` checked against `demo/node_modules` (22.1.1), 2026-09-30:** no standalone
+  `chain` export; it's `ResourceParamsContext.chain` (`readonly chain: <T>(resource: Resource<T>) => T`),
+  and `@angular/core` exports it only as private `ɵchain`. `debounced` is exported from `@angular/core`
+  with docblock `@experimental 22.0`. `debounced()` evaluates its source with `setInParamsFunction(true)`,
+  so a factory can debounce itself (variant E) without breaking rule 1.
 - **validateHttp = validateAsync + httpResource factory.** The docs call validateAsync "a lower-level
   API"; it's the same API. `validateStandardSchema` is the framework's own non-HTTP swap.
 - **Factory contract:** read `params` only inside a resource's params evaluation. With debounce,
@@ -52,6 +77,13 @@ checked against the tag: `validate_http.ts` L96–110, `validate_async.ts` L128�
       The step-2 fallback (`git checkout -- validators.ts`) now has a committed final state.
 - [ ] Optional: make the Worker do real, chunked work (e.g. a hashed local blocklist) instead of a
       timer, if the "contrived worker" objection comes up in rehearsal. The deck already pre-empts it.
+- [ ] **Rehearse step 3 with debounce off** (tab 2, `?latency=2000&debounce=0`) and re-record the
+      fallbacks: the step-2/3 logs now include `stopped` lines and step 3 cancels once per keystroke.
+- [ ] **Timing:** the 40-min deck gained 4 content slides (trace, two rules, own debounce, timing) and
+      the payoff; section budgets in the notes sum to ~39 min. The 25-min cut is 29 slides (was 26):
+      time it; if long, drop slide 17 (`validateStandardSchema`) from the range first.
+- [ ] Re-run the spec on Angular v23 when it ships (the abstract says "Angular 22+"; `debounced()` is
+      experimental and may move).
 
 ## Challenge review (2026-09-28), applied
 
@@ -69,4 +101,12 @@ rxResource variant D tested; explicit 25-min cut; reloadValidation backup retitl
 - 2026-09-28 — generalization spike: 3 variants, 12/12.
 - 2026-09-28 — deck written; demo made stage-ready (API server, Worker, DI lookup); factory-rule claim corrected after testing five shapes.
 - 2026-09-28 — challenge review applied (see above); rxResource variant; 24/24; 25-min cut; code font 14px.
+- 2026-09-30 — aligned with the final CFP abstract. Framing is now "what's the primitive, and what's the
+  policy on top?" (badges Preset / Policy / Primitive; new trace slide "Where the primitive ends and the
+  policy begins"). Live swap explicitly through `validateAsync()`'s `factory`; Web Worker is the single
+  non-HTTP source (IndexedDB mentions dropped). New slides: two rules (+ Rule 1 / Rule 2 in code), own
+  debounce with `debounced()` + `ctx.chain()`, "when pending flips, when work is really cancelled",
+  closing payoff + closing line; Q&A on chain/`debounced()` status. Step 3 runs with debounce off.
+  Demo: Worker client/worker split, `stopped` ack, variant E, `offline` error path, `?debounce=`;
+  spec 24 → 50. 25-min cut now drops the testing payoff as the README always said.
 - 2026-09-28 — restyled after talk-context-engineering (cold open, accent lists, callouts, footer, Thank-you with QR); outcome reframed as a "disguise or enhancement?" lens: framing slide, verdict badges on reveals, verdict column in the stack table, closing "What you take home" slide. Abstract's last paragraph updated to match.

@@ -11,5 +11,5 @@ mdc: true
 fonts:
   sans: Roboto
   mono: Roboto Mono
-src: ./slides.md#1-5,7,10-11,13-20,24-26,29-35
+src: ./slides.md#1-5,7,10-11,13-22,27-28,30,34-41
 ---

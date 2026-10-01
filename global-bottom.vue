@@ -27,7 +27,7 @@ const visible = computed(() => {
   z-index: 20;
   font-size: 0.7rem;
   letter-spacing: 0.02em;
-  color: rgba(120, 120, 120, 0.55);
+  color: var(--footer-text);
   user-select: none;
   pointer-events: none;
 }

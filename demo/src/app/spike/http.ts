@@ -1,8 +1,8 @@
-import { HttpInterceptorFn, HttpResponse } from '@angular/common/http';
+import { HttpErrorResponse, HttpInterceptorFn, HttpResponse } from '@angular/common/http';
 import { inject } from '@angular/core';
-import { delay, finalize, of, tap } from 'rxjs';
+import { delay, dematerialize, finalize, of, tap } from 'rxjs';
 import { LookupLog } from './lookup-log';
-import { Availability, TAKEN } from './taken';
+import { Availability, FAILING, TAKEN } from './taken';
 
 export const USERNAME_API = '/api/username';
 
@@ -16,11 +16,14 @@ export const logUsernameRequests: HttpInterceptorFn = (req, next) => {
   if (!req.url.startsWith(USERNAME_API)) return next(req);
   const log = inject(LookupLog);
   const username = usernameOf(req.urlWithParams);
-  let completed = false;
+  let settled = false;
   log.record('http', 'start', username);
   return next(req).pipe(
-    tap({ complete: () => ((completed = true), log.record('http', 'done', username)) }),
-    finalize(() => completed || log.record('http', 'aborted', username)),
+    tap({
+      complete: () => ((settled = true), log.record('http', 'done', username)),
+      error: () => ((settled = true), log.record('http', 'failed', username)),
+    }),
+    finalize(() => settled || log.record('http', 'aborted', username)),
   );
 };
 
@@ -28,7 +31,12 @@ export const logUsernameRequests: HttpInterceptorFn = (req, next) => {
 export function fakeUsernameApi(latencyMs: number): HttpInterceptorFn {
   return (req, next) => {
     if (!req.url.startsWith(USERNAME_API)) return next(req);
-    const body: Availability = { available: !TAKEN.includes(usernameOf(req.urlWithParams)) };
+    const username = usernameOf(req.urlWithParams);
+    if (username === FAILING) {
+      const error = new HttpErrorResponse({ status: 503, statusText: 'Service Unavailable', url: req.urlWithParams });
+      return of({ kind: 'E' as const, error }).pipe(delay(latencyMs), dematerialize());
+    }
+    const body: Availability = { available: !TAKEN.includes(username) };
     return of(new HttpResponse({ status: 200, body })).pipe(delay(latencyMs));
   };
 }

@@ -23,11 +23,12 @@ layer and the testing payoff and keeps the generalization reveal.
 npm install
 npm run dev        # 40-min deck
 npm run dev:25     # 25-min cut
+npm run dev:type   # same talk, typography-as-architecture style (under evaluation)
 
 cd demo && npm install
 npm start          # username API (600 ms) + ng serve → http://localhost:4200
 npm run stage      # same with 2 s latency, for the talk → http://localhost:4200/?latency=2000
-npx ng test --watch=false   # 24 equivalence tests
+npx ng test --watch=false   # 50 tests: 5 variants × equivalence scenarios + the two rules
 ```
 
 Deck: http://localhost:3030.

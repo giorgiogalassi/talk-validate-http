@@ -3,3 +3,4 @@ dist/
 .slidev/
 .DS_Store
 dist-25/
+dist-type/

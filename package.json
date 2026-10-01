@@ -9,7 +9,10 @@
     "export-dark": "slidev export --dark",
     "dev:25": "slidev slides-25.md",
     "build:25": "slidev build slides-25.md --out dist-25",
-    "export:25": "slidev export slides-25.md --output talk-validate-http-25min.pdf"
+    "export:25": "slidev export slides-25.md --output talk-validate-http-25min.pdf",
+    "dev:type": "slidev slides-type.md",
+    "build:type": "slidev build slides-type.md --out dist-type",
+    "export:type": "slidev export slides-type.md --output talk-validate-http-type.pdf"
   },
   "author": "Giorgio Galassi",
   "license": "ISC",

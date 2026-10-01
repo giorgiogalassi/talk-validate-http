@@ -6,6 +6,7 @@ import { createServer } from 'node:http';
 const PORT = 4312;
 const LATENCY_MS = Number(process.env.LATENCY_MS ?? 600); // `npm run stage` uses 2000
 const TAKEN = new Set(['admin', 'angular', 'giorgio']); // keep in sync with src/app/spike/taken.ts
+const FAILING = 'offline'; // answers 503, to show onError
 
 createServer((req, res) => {
   const url = new URL(req.url ?? '/', `http://localhost:${PORT}`);
@@ -16,6 +17,11 @@ createServer((req, res) => {
   const username = url.searchParams.get('u') ?? '';
   console.log(`[api] ← ${username}`);
   const timer = setTimeout(() => {
+    if (username === FAILING) {
+      console.log(`[api] → ${username} (503)`);
+      res.writeHead(503).end();
+      return;
+    }
     console.log(`[api] → ${username}`);
     res.writeHead(200, { 'content-type': 'application/json' });
     res.end(JSON.stringify({ available: !TAKEN.has(username) }));

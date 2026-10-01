@@ -1,15 +1,16 @@
 import { Injectable, signal } from '@angular/core';
 
-export type Transport = 'http' | 'worker' | 'fake';
+export type Transport = 'http' | 'worker';
 
 export interface LookupEvent {
   at: number;
   transport: Transport;
-  kind: 'start' | 'done' | 'aborted';
+  /** `aborted`: the loader saw the AbortSignal. `stopped`: the Worker confirmed it cleared the job. */
+  kind: 'start' | 'done' | 'failed' | 'aborted' | 'stopped';
   username: string;
 }
 
-/** Records every lookup that starts, completes, or gets cancelled. */
+/** Records every lookup that starts, completes, fails, or gets cancelled. */
 @Injectable({ providedIn: 'root' })
 export class LookupLog {
   private readonly t0 = performance.now();

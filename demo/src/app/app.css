@@ -1,8 +1,10 @@
-main { font: 15px/1.5 system-ui, sans-serif; max-width: 44rem; margin: 2rem auto; padding: 0 1rem; }
-label { display: grid; grid-template-columns: 20rem 1fr 7rem; gap: .75rem; align-items: center; margin: .5rem 0; }
+main { font: 15px/1.5 system-ui, sans-serif; max-width: 50rem; margin: 2rem auto; padding: 0 1rem; }
+label { display: grid; grid-template-columns: 24rem 1fr 7rem; gap: .75rem; align-items: center; margin: .5rem 0; }
 input { font: inherit; padding: .3rem .5rem; }
 output { font-family: ui-monospace, monospace; }
 table { border-collapse: collapse; width: 100%; font-family: ui-monospace, monospace; font-size: 13px; }
 th, td { text-align: left; padding: .15rem .5rem; border-bottom: 1px solid #ddd; }
 tr.aborted { color: #c2603a; }
 tr.done { color: #2f7d4f; }
+tr.stopped { color: #a3431f; font-weight: 600; }
+tr.failed { color: #8a2a8a; }

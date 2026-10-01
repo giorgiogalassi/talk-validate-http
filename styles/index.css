@@ -1,3 +1,27 @@
+/* ---------------------------------------------------------------
+   Palette. Accent and muted text are tuned per colour scheme so text
+   passes WCAG AA (4.5:1) on every background it sits on: slide, callout,
+   code block. Brand orange #c2603a was 4.18:1 on white, 4.49:1 on dark.
+   --------------------------------------------------------------- */
+:root {
+  --accent: #ad5230;
+  --on-accent: #ffffff;
+  --muted-text: #6b6b72;
+  --footer-text: #707070;
+}
+html.dark {
+  --accent: #d9764f;
+  --on-accent: #121212;
+  --muted-text: #a3a3ad;
+  --footer-text: #8a8a8a;
+}
+html.dark .ta,
+html.dark .ta-deck {
+  --ta-ink: #ececf0;
+  --ta-muted: #a3a3ad;
+  --ta-line: #34343a;
+}
+
 /* Constrain images on all slides without affecting presenter UI */
 .slidev-layout img {
   max-height: 260px;
@@ -8,7 +32,7 @@
 }
 
 .accent {
-  color: #c2603a;
+  color: var(--accent);
 }
 
 .slidev-layout img.qr-code {
@@ -16,22 +40,22 @@
 }
 
 .callout {
-  border-left: 3px solid #c2603a;
-  background: rgba(194, 96, 58, 0.06);
+  border-left: 3px solid var(--accent);
+  background: color-mix(in srgb, var(--accent) 6%, transparent);
   padding: 0.2em 0.8em;
   border-radius: 0 4px 4px 0;
   margin: 0.75em 0;
 }
 
 .slidev-layout table th {
-  color: #c2603a;
+  color: var(--accent);
   font-weight: 600;
 }
 
 .thank-you-title {
   font-size: 4rem;
   font-weight: 700;
-  color: #c2603a;
+  color: var(--accent);
   line-height: 1;
   letter-spacing: -0.02em;
 }
@@ -44,8 +68,8 @@
 }
 
 .tag {
-  border: 1.5px solid rgba(194, 96, 58, 0.55);
-  color: #c2603a;
+  border: 1.5px solid color-mix(in srgb, var(--accent) 55%, transparent);
+  color: var(--accent);
   padding: 0.2em 0.75em;
   border-radius: 999px;
   font-size: 0.8rem;
@@ -131,7 +155,7 @@
   --slidev-code-line-height: 22px;
 }
 
-/* Verdict badges: the talk's "disguise or enhancement?" lens */
+/* Verdict badges (original classes; the lens is now "primitive or policy?", see .verdict.preset/.policy/.primitive below) */
 .verdict {
   display: inline-block;
   vertical-align: middle;
@@ -144,14 +168,193 @@
   text-transform: uppercase;
 }
 .verdict.disguise {
-  border: 1.5px solid rgba(120, 120, 120, 0.6);
-  color: #6b6b6b;
+  border: 1.5px solid var(--muted-text);
+  color: var(--muted-text);
 }
 .verdict.enhancement {
-  background: #c2603a;
-  color: #fff;
+  background: var(--accent);
+  color: var(--on-accent);
 }
 .verdict.engine {
-  border: 1.5px solid #c2603a;
-  color: #c2603a;
+  border: 1.5px solid var(--accent);
+  color: var(--accent);
 }
+
+/* ---------------------------------------------------------------
+   Typography-as-architecture (sample, see slides-type-sample.md).
+   Not used by slides.md unless the style is adopted.
+   --------------------------------------------------------------- */
+html:not(.dark) .ta {
+  --ta-ink: #1f1f24;
+  --ta-muted: #6b6b72;
+  --ta-line: #e2e2e6;
+}
+.ta {
+  font-family: 'Roboto Flex', Roboto, system-ui, sans-serif;
+  color: var(--ta-ink);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.ta-rule {
+  display: flex;
+  justify-content: space-between;
+  gap: 1rem;
+  border-top: 2px solid var(--ta-ink);
+  padding-top: 0.55rem;
+  margin-bottom: 1.1rem;
+  font-size: 0.72rem;
+  font-weight: 600;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+  color: var(--ta-muted);
+}
+.ta-rule > :first-child { color: var(--ta-ink); }
+.ta-accent { color: var(--accent); }
+.ta-foot {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 1.5rem;
+  margin-top: auto;
+  border-top: 1px solid var(--ta-line);
+  padding-top: 0.8rem;
+}
+.ta-foot b {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 700;
+  font-variation-settings: "wdth" 85, "opsz" 32;
+  line-height: 1.2;
+}
+.ta-foot span { color: var(--ta-muted); font-size: 0.8rem; }
+.ta-hero { margin-block: auto; padding-bottom: 0.6rem; }
+.ta-aside {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.25fr);
+  gap: 2rem;
+  margin-top: 1.4rem;
+  font-size: 1.05rem;
+  line-height: 1.45;
+}
+.ta-aside strong { font-weight: 650; }
+.ta-aside p { margin: 0; color: var(--ta-muted); }
+.ta-stack { list-style: none; margin: 0; padding: 0; }
+.ta-stack li {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 19rem;
+  align-items: end;
+  gap: 1.5rem;
+  padding: 0.4rem 0 0.45rem;
+  border-bottom: 1px solid var(--ta-line);
+  margin: 0;
+}
+.ta-stack li:first-child { border-top: 1px solid var(--ta-line); }
+.ta-stack b {
+  font-size: 2.9rem;
+  line-height: 0.9;
+  letter-spacing: -0.03em;
+  font-family: 'Roboto Flex', Roboto, system-ui, sans-serif;
+}
+.ta-stack .v-disguise { font-weight: 300; font-variation-settings: "wdth" 100, "opsz" 144; color: var(--ta-muted); }
+.ta-stack .v-enhancement { font-weight: 760; font-variation-settings: "wdth" 80, "opsz" 144; }
+.ta-stack .v-engine { font-weight: 1000; font-variation-settings: "wdth" 125, "opsz" 144; color: var(--accent); }
+.ta-stack .v-floor { font-weight: 500; font-variation-settings: "wdth" 60, "opsz" 144; color: var(--ta-muted); }
+.ta-stack small {
+  display: block;
+  font-size: 0.95rem;
+  line-height: 1.3;
+  color: var(--ta-muted);
+  padding-bottom: 0.15rem;
+}
+.ta-stack small em {
+  font-style: normal;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ta-ink);
+}
+.ta-number {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: end;
+  gap: 2.2rem;
+  flex: 1;
+}
+.ta-number strong {
+  font-family: 'Roboto Flex', Roboto, system-ui, sans-serif;
+  font-size: 30rem;
+  line-height: 0.74;
+  font-weight: 900;
+  font-variation-settings: "wdth" 30, "opsz" 144;
+  letter-spacing: -0.04em;
+  color: var(--accent);
+}
+.ta-number p { margin: 0 0 0.6rem; font-size: 1.9rem; line-height: 1.15; font-weight: 650; font-variation-settings: "wdth" 85, "opsz" 48; }
+.ta-number p span { display: block; margin-top: 0.6rem; font-size: 1rem; font-weight: 400; color: var(--ta-muted); }
+/* Call parentheses in display type: set light, so "()" never reads as a zero at heavy weights */
+.ta .paren { font-weight: 250; font-variation-settings: "wdth" 100, "opsz" 144; letter-spacing: 0; }
+
+/* Deck-wide type for the ruled layout (slides-type.md) */
+.ta-deck { font-family: Roboto, system-ui, sans-serif; }
+.ta-deck h1 {
+  font-family: 'Roboto Flex', Roboto, system-ui, sans-serif;
+  font-weight: 800;
+  font-variation-settings: "wdth" 82, "opsz" 72;
+  letter-spacing: -0.025em;
+  font-size: 2.55rem;
+  line-height: 1.02;
+  margin-bottom: 0.5em;
+}
+.ta-deck .ruled-body > .ta { flex: 1; height: auto; }
+.ta-deck .ta-rule { margin-bottom: 0.9rem; }
+.ta-quote {
+  font-family: 'Roboto Flex', Roboto, system-ui, sans-serif;
+  font-size: 2.1rem;
+  line-height: 1.18;
+  font-weight: 600;
+  font-variation-settings: "wdth" 88, "opsz" 48;
+  letter-spacing: -0.015em;
+  margin: 0.6rem 0 1rem;
+}
+.ta-quote code { font-size: 0.8em; }
+.ta-lens li { grid-template-columns: minmax(0, 1fr) 24rem !important; }
+.ta-lens b { font-size: 4.2rem !important; }
+.ta-lens small { font-size: 1.05rem !important; }
+.ta-thanks {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 2rem;
+  align-items: end;
+  margin-top: auto;
+  border-top: 1px solid var(--ta-line);
+  padding-top: 1rem;
+}
+.ta-thanks .who b { display: block; font-size: 1.3rem; font-weight: 700; }
+.ta-thanks .who span { color: var(--ta-muted); font-size: 0.9rem; }
+.ta-thanks .links { font-size: 0.85rem; line-height: 1.5; margin-top: 0.6rem; }
+.ta-thanks .qr { display: flex; flex-direction: column; align-items: center; gap: 0.3rem; font-size: 0.75rem; color: var(--ta-muted); }
+/* Descender clearance: fitted lines use line-height 0.82, so g/p/y hang below the box */
+.ta-hero .fit-text:last-child { padding-bottom: 0.16em; }
+/* The ruled layout draws the rule outside .ta, so the palette lives on the deck too */
+html:not(.dark) .ta-deck {
+  --ta-ink: #1f1f24;
+  --ta-muted: #6b6b72;
+  --ta-line: #e2e2e6;
+}
+
+/* Captions and subtitles: a muted colour instead of opacity, so they keep 4.5:1 in both schemes.
+   (Slidev's default theme fades `h1 + p` to 50%, which drops under 4:1 on white.) */
+.slidev-layout .caption { color: var(--muted-text); }
+.slidev-layout h1 + p { opacity: 1; color: var(--muted-text); }
+
+/* Primitive / policy lens (replaces "disguise or enhancement?"). Same looks as the old badges:
+   preset = muted outline, policy = filled accent, primitive = accent outline. */
+.verdict.preset { border: 1.5px solid var(--muted-text); color: var(--muted-text); }
+.verdict.policy { background: var(--accent); color: var(--on-accent); }
+.verdict.primitive { border: 1.5px solid var(--accent); color: var(--accent); }
+.ta-stack .v-preset { font-weight: 300; font-variation-settings: "wdth" 100, "opsz" 144; color: var(--ta-muted); }
+.ta-stack .v-policy { font-weight: 760; font-variation-settings: "wdth" 80, "opsz" 144; }
+.ta-stack .v-primitive { font-weight: 1000; font-variation-settings: "wdth" 125, "opsz" 144; color: var(--accent); }
+/* Dense comparison tables (trace + timing slides). */
+.slidev-layout table.dense, .slidev-layout .dense table { font-size: 0.8rem; line-height: 1.35; }
+.slidev-layout .dense th, .slidev-layout .dense td { padding: 0.3em 0.6em; }

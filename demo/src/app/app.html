@@ -1,6 +1,6 @@
 <main>
   <h1>The Validator That Isn't: spike</h1>
-  <p>Taken: <code>admin</code>, <code>angular</code>, <code>giorgio</code>. Debounce 300 ms, latency 600 ms. A and B hit a real local API (watch DevTools → Network); C and D never touch the network.</p>
+  <p>Taken: <code>admin</code>, <code>angular</code>, <code>giorgio</code>. <code>offline</code> makes the check fail. Debounce {{ debounce ?? 'off' }}{{ debounce ? ' ms' : '' }} (<code>?debounce=0</code> turns it off), latency via <code>?latency=</code>. A and B hit a real local API (watch DevTools → Network); C, D and E ask a Web Worker and never touch the network. <code>aborted</code> = the loader saw the AbortSignal; <code>stopped</code> = the Worker confirmed it dropped the job.</p>
 
   @for (v of variants; track v.key) {
     @let field = f[v.key];

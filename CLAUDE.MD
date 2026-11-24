@@ -12,7 +12,7 @@ by Giorgio Galassi. Advanced level, 40-min extended slot (25-min cut defined in 
 Do not re-derive source claims; cite from the source trace.
 
 ## Demo app
-`demo/` is a standalone Angular 22.1.1 CLI app (own package.json, `cd demo && npm start`). Keep the Angular version exact — it matches the source-trace pin; don't bump it without updating IMPLEMENTATION-PLAN.md.
+`demo/` is a standalone Angular 22.3.0 CLI app (since 2026-11-24; the source trace stays pinned to v22.1.1, see IMPLEMENTATION-PLAN.md → Version pin) (own package.json, `cd demo && npm start`). Keep the Angular version exact — it matches the source-trace pin; don't bump it without updating IMPLEMENTATION-PLAN.md.
 
 ## Stack
 - Slidev, Vue 3, UnoCSS, Shiki

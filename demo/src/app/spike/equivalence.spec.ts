@@ -155,7 +155,7 @@ describe.each(ALL)('variant $key ($transport), debounce on', ({ key, transport }
     expect(form[key]().pending()).toBe(true); // …which runs before the next render
   });
 
-  it('going sync-invalid mid-flight does not abort: the late result is discarded', async () => {
+  it('going sync-invalid mid-flight aborts the lookup in flight (Angular 22.3+: going idle aborts)', async () => {
     const { log, form, type } = setup(DEBOUNCE_MS);
     type(key, 'giorgio');
     await advance(DEBOUNCE_MS + 40); // lookup for 'giorgio' in flight
@@ -167,8 +167,11 @@ describe.each(ALL)('variant $key ($transport), debounce on', ({ key, transport }
 
     await advance(DEBOUNCE_MS + LATENCY_MS + 100);
     const events = eventsOf(log);
-    expect(events).toContain('done:giorgio'); // never aborted: params went undefined, not to a new request
-    expect(events).not.toContain('aborted:giorgio');
+    // Angular 22.3 moved abortInProgressLoad() before the `request === undefined` check in
+    // ResourceImpl.loadEffect(): params going undefined (idle) now aborts the load in flight.
+    // Up to 22.2 the load finished and its late result was discarded by identity.
+    expect(events).toContain('aborted:giorgio');
+    expect(events).not.toContain('done:giorgio');
     expect(form[key]().pending()).toBe(false);
     expect(form[key]().errors().map((e) => e.kind)).toEqual(['minLength']); // 'taken' never surfaced
   });
@@ -202,15 +205,15 @@ describe.each(WITH_DEBOUNCE_OPTION)('variant $key ($transport), debounce off (th
     }
   });
 
-  it('going sync-invalid mid-flight still does not abort: idle never aborts', async () => {
+  it('going sync-invalid mid-flight aborts too without debounce: idle aborts (22.3+)', async () => {
     const { log, form, type } = setup(undefined);
     type(key, 'giorgio');
     await advance(40);
     type(key, 'gi');
     expect(form[key]().pending()).toBe(false); // no debounce window: idle right away
     await advance(LATENCY_MS + 100);
-    expect(eventsOf(log)).toContain('done:giorgio');
-    expect(eventsOf(log)).not.toContain('aborted:giorgio');
+    expect(eventsOf(log)).toContain('aborted:giorgio');
+    expect(eventsOf(log)).not.toContain('done:giorgio');
     expect(form[key]().errors().map((e) => e.kind)).toEqual(['minLength']);
   });
 });

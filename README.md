@@ -38,7 +38,7 @@ Deck: http://localhost:3030.
 ```
 slides.md               — slide content and speaker notes (40 min)
 slides-25.md            — 25-min cut, imports slides from slides.md
-demo/                   — Angular 22.1.1 demo app (cd demo && npm start); stage runbook in demo/STAGE.md
+demo/                   — Angular 22.3.0 demo app (cd demo && npm start); stage runbook in demo/STAGE.md
 IMPLEMENTATION-PLAN.md  — living build doc: demo spike, risks, changelog
 src/                    — images used in slides
 styles/                 — custom CSS

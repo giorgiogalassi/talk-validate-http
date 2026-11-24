@@ -12,6 +12,12 @@ angular/angular **v22.1.1** (commit `565dbb2`), matching the article's source tr
 checked against the tag: `validate_http.ts` L96–110, `validate_async.ts` L128–180,
 `standard_schema.ts` L104–124. Re-check only if a newer release moves a cited line.
 
+**Demo on 22.3.0 since 2026-11-24.** The source trace stays pinned to v22.1.1. Checked against the
+22.3.0 build (`fesm2022/signals.mjs`): `validateHttp()` is still one `validateAsync()` call and
+`validateAsync()` is unchanged. One behaviour change in core: `ResourceImpl.loadEffect()` now calls
+`abortInProgressLoad()` before the `request === undefined` check, so a resource going idle aborts the
+load in flight (see "Lazy aborts"). Cited line numbers not re-checked against the 22.3.0 tag.
+
 ## Status
 
 - **Deck:** `slides.md`, 40 min, 41 slides incl. 5 backup. 25-min cut: `slides-25.md` (imports
@@ -33,7 +39,7 @@ checked against the tag: `validate_http.ts` L96–110, `validate_async.ts` L128�
 - **Spec:** `equivalence.spec.ts`, **50/50**, stable over 3 repeated runs: 5 variants × 7 scenarios
   (idle, pending+coalesce, valid, error, cancel incl. Worker `stopped`, one-tick pending, invalid
   mid-flight) + 4 variants × 3 debounce-off scenarios (synchronous pending, every superseding
-  keystroke aborts, idle never aborts) + rule 1 (effect read sees the sentinel) + rule 2 (honoured:
+  keystroke aborts, idle aborts since 22.3) + rule 1 (effect read sees the sentinel) + rule 2 (honoured:
   Worker stops the job; ignored: same UI, Worker finishes both). The Worker's real code runs
   in-process (`in-process-worker.ts`, jsdom has no Worker); the old timer fake is gone.
 - **Browser-verified 2026-09-30** (Chromium, 600 ms, `?debounce=0`): A → 4 × `ERR_ABORTED` on the
@@ -59,12 +65,14 @@ checked against the tag: `validate_http.ts` L96–110, `validate_async.ts` L128�
   `resource()` example ignores `abortSignal`.
 - **Pending timing:** without debounce, synchronous (linkedSignal). With debounce, one effect later
   (`debounced()` sets 'loading'), before render. Spec: false synchronously, true after one tick.
-- **Lazy aborts:** an in-flight load is aborted only when the next load starts (≈ debounce after the
-  keystroke). Going sync-invalid mid-flight never aborts: the load completes and is discarded by
-  identity; meanwhile the field is minLength-invalid AND pending for the debounce window.
+- **Lazy aborts:** an in-flight load is aborted when the next load starts (≈ debounce after the
+  keystroke). **Since 22.3** going sync-invalid mid-flight aborts too: params go `undefined`, the
+  resource goes idle and `loadEffect()` aborts the load in flight. Up to 22.2 it never aborted: the
+  load completed and was discarded by identity. With debounce on, the field is still minLength-invalid
+  AND pending for the debounce window.
 - **`debounced()` never delays its initial value;** the validation resource is created lazily →
   tests must read field state before typing.
-- **`reloadValidation()`** is public on field state and not called automatically in 22.1.1; the
+- **`reloadValidation()`** is public on field state and not called automatically in 22.1.1 (not re-checked on 22.3.0); the
   `IS_ASYNC_VALIDATION_RESOURCE` marker on the metadata key makes custom resources reload too.
 
 ## Open items
@@ -110,3 +118,7 @@ rxResource variant D tested; explicit 25-min cut; reloadValidation backup retitl
   Demo: Worker client/worker split, `stopped` ack, variant E, `offline` error path, `?debounce=`;
   spec 24 → 50. 25-min cut now drops the testing payoff as the README always said.
 - 2026-09-28 — restyled after talk-context-engineering (cold open, accent lists, callouts, footer, Thank-you with QR); outcome reframed as a "disguise or enhancement?" lens: framing slide, verdict badges on reveals, verdict column in the stack table, closing "What you take home" slide. Abstract's last paragraph updated to match.
+- 2026-11-24 — demo moved to Angular 22.3.0. 9 equivalence tests (all 5 variants) flipped from "going idle never
+  aborts" to "going idle aborts" (core change in `ResourceImpl.loadEffect()`); 50/50 green. Slide text not
+  changed: slides.md 215–230, 299–301, 629–644, 711–725 (and the same content in slides-type.md and the
+  25-min cut) still say idle never aborts and need Giorgio's rewrite.
